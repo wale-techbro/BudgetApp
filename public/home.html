@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easy Laundry Services - Dashboard</title>
+    <title>BudgetApp - Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="icon" type="image/png" href="img/favicon.ico">
@@ -24,7 +24,7 @@
             border: none;
         }
         .welcome-banner {
-            background-color: #4363ff;
+            background: linear-gradient(to right, #377666, #A9D933);
             color: white;
             padding: 20px;
             border-radius: 10px;
@@ -60,14 +60,14 @@
             color: #ff6b33;
         }
         .get-started-btn {
-            background-color: #ff6b33;
+            background-color: #A9D933;
             border: none;
             padding: 10px 20px;
             border-radius: 8px;
             transition: all 0.3s;
         }
         .get-started-btn:hover {
-            background-color: #e55a28;
+            background-color: #89b223;
             transform: translateY(-2px);
         }
         .table th {
@@ -116,7 +116,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="#">My Laundry</a>
+                        <a class="nav-link active" href="#">My Dashboard</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="contact.html">Contact Us</a>
@@ -146,93 +146,120 @@
         
         <div class="row mb-4">
             <div class="col-md-4">
-                <div class="card stats-card customers">
+                <div class="card stats-card income">
                     <div class="icon">
-                        <i class="bi bi-people-fill fs-4"></i>
+                        <i class="bi bi-cash-stack fs-4"></i>
                     </div>
-                    <h6 class="text-muted">Total Customers</h6>
-                    <h2 id="totalCustomers">5,423</h2>
+                    <h6 class="text-muted">My Income</h6>
+                    <h2 id="totalIncome">₦0</h2>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card stats-card all-orders">
+                <div class="card stats-card expenses">
                     <div class="icon">
-                        <i class="bi bi-bag-check fs-4"></i>
+                        <i class="bi bi-cart-dash fs-4"></i>
                     </div>
-                    <h6 class="text-muted">All Orders</h6>
-                    <h2 id="allOrders">0</h2>
+                    <h6 class="text-muted">My Expenses</h6>
+                    <h2 id="totalExpenses">₦0</h2>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card stats-card active-orders">
+                <div class="card stats-card balance">
                     <div class="icon">
-                        <i class="bi bi-hourglass-split fs-4"></i>
+                        <i class="bi bi-wallet2 fs-4"></i>
                     </div>
-                    <h6 class="text-muted">Active Orders</h6>
-                    <h2 id="activeOrders">0</h2>
+                    <h6 class="text-muted">My Balance</h6>
+                    <h2 id="balance">₦0</h2>
                 </div>
             </div>
         </div>
-
+        
         <div class="row">
+        
+            <!-- Main Dashboard Sections -->
             <div class="col-md-8">
+                <!-- Income Section -->
                 <div class="card">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Current Orders</h5>
-                        <a href="add.html" class="btn get-started-btn">Add New Pickup</a>
+                        <h5 class="mb-0">My Income</h5>
+                        <a href="add_income.html" class="btn get-started-btn">Add Income</a>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table align-middle" id="currentOrdersTable">
+                            <table class="table align-middle" id="incomeTable">
                                 <thead>
                                     <tr>
-                                        <th>Order ID</th>
                                         <th>Date</th>
-                                        <th>Items</th>
-                                        <th>Price</th>
-                                        <th>Status</th>
+                                        <th>Source</th>
+                                        <th>Amount</th>
                                     </tr>
                                 </thead>
-                                <tbody id="currentOrdersTableBody">
-                                    <!-- Current orders will be added here dynamically -->
+                                <tbody id="incomeTableBody">
+                                    <!-- Income entries will be loaded here dynamically -->
                                 </tbody>
                             </table>
                         </div>
-                        <div id="noCurrentOrders" class="text-center py-3">
-                            <p class="text-muted">You have no active orders.</p>
-                            <a href="add.html" class="btn get-started-btn">Schedule a Pickup</a>
+                        <div id="noIncome" class="text-center py-3">
+                            <p class="text-muted">No income records found.</p>
                         </div>
                     </div>
                 </div>
-
+        
+                <!-- Expenses Section -->
                 <div class="card mt-4">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">Completed Orders</h5>
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">My Expenses</h5>
+                        <a href="add_expense.html" class="btn get-started-btn">Add Expense</a>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table align-middle" id="completedOrdersTable">
+                            <table class="table align-middle" id="expensesTable">
                                 <thead>
                                     <tr>
-                                        <th>Order ID</th>
                                         <th>Date</th>
-                                        <th>Items</th>
-                                        <th>Price</th>
-                                        <th>Status</th>
+                                        <th>Item</th>
+                                        <th>Amount</th>
                                     </tr>
                                 </thead>
-                                <tbody id="completedOrdersTableBody">
-                                    <!-- Completed orders will be added here dynamically -->
+                                <tbody id="expensesTableBody">
+                                    <!-- Expenses will be loaded here dynamically -->
                                 </tbody>
                             </table>
                         </div>
-                        <div id="noCompletedOrders" class="text-center py-3">
-                            <p class="text-muted">You have no completed orders yet.</p>
+                        <div id="noExpenses" class="text-center py-3">
+                            <p class="text-muted">No expenses recorded yet.</p>
+                        </div>
+                    </div>
+                </div>
+        
+                <!-- Budget/Wishlist Section -->
+                <div class="card mt-4">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">My Budget/Wishlist</h5>
+                        <a href="add_budget.html" class="btn get-started-btn">Add to Wishlist</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table align-middle" id="wishlistTable">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Allocated Budget</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="wishlistTableBody">
+                                    <!-- Wishlist items will be loaded here dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="noWishlist" class="text-center py-3">
+                            <p class="text-muted">No wishlist items added yet.</p>
                         </div>
                     </div>
                 </div>
             </div>
 
+                            <!-- Account Details Section -->
             <div class="col-md-4">
                 <div class="card mb-4">
                     <div class="card-header bg-white">
@@ -241,32 +268,16 @@
                     <div class="card-body">
                         <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
                         <p><strong>Member since:</strong> <span id="userSince">Loading...</span></p>
-                        <p><strong>Total orders:</strong> <span id="userTotalOrders">0</span></p>
+                        <p><strong>Total Transactions:</strong> <span id="userTotalTransactions">0</span></p>
                     </div>
                 </div>
-
-                <div class="card price-card">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">Our Prices</h5>
-                    </div>
-                    <div class="card-body">
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">T-shirt - ₦500</li>
-                            <li class="list-group-item">Pants - ₦1000</li>
-                            <li class="list-group-item">Shorts - ₦500</li>
-                            <li class="list-group-item">Undies - ₦500</li>
-                            <li class="list-group-item">Bed Covers - ₦500</li>
-                            <li class="list-group-item">Native Wears - ₦500</li>
-                            <li class="list-group-item">Office Suits - ₦3500</li>
-                        </ul>
-                    </div>
-                </div>
-                
-                
-
             </div>
+
+            
         </div>
-    </div>
+        
+
+        
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -279,171 +290,177 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script>
-        // Dashboard specific code
-        document.addEventListener('DOMContentLoaded', () => {
-            // Format current date
-            const now = new Date();
-            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-            document.getElementById('currentDate').textContent = `Today is ${now.toLocaleDateString('en-US', options)}`;
-            
-            // Check if user is logged in
-            auth.onAuthStateChanged(user => {
-                if (user) {
-                    // Update user info
-                    document.getElementById('userEmail').textContent = user.email;
-                    
-                    // Get additional user data from Firestore
-                    db.collection('users').doc(user.uid).get().then(doc => {
-                        if (doc.exists) {
-                            const userData = doc.data();
-                            
-                            // Update welcome message and display name
-                            if (userData.firstName) {
-                                document.getElementById('welcomeMessage').textContent = 
-                                    `Hello ${userData.firstName} 👋`;
-                                document.getElementById('userDisplayName').textContent = 
-                                    userData.firstName;
-                            }
-                            
-                            // Check if user is admin
-                            if (userData.isAdmin) {
-                                document.getElementById('adminPanel').style.display = 'block';
-                            }
-                            
-                            // Format and display user creation date
-                            if (userData.createdAt) {
-                                const createdAt = userData.createdAt.toDate();
-                                const options = { year: 'numeric', month: 'long', day: 'numeric' };
-                                document.getElementById('userSince').textContent = 
-                                    createdAt.toLocaleDateString('en-US', options);
-                            }
-                        }
-                    }).catch(error => {
-                        console.error("Error getting user data:", error);
-                    });
-                    
-                    // Load user's orders
-                    loadUserOrders(user.uid);
-                    
-                    // Load price list
-                    loadPriceList();
-                } else {
-                    // Redirect to login page if not logged in
-                    window.location.href = 'login.html';
+    document.addEventListener('DOMContentLoaded', () => {
+    // Format current date
+    const now = new Date();
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    document.getElementById('currentDate').textContent = `Today is ${now.toLocaleDateString('en-US', options)}`;
+
+    // Check if user is logged in
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            // Update user info
+            document.getElementById('userEmail').textContent = user.email;
+
+            // Get additional user data from Firestore
+            db.collection('users').doc(user.uid).get().then(doc => {
+                if (doc.exists) {
+                    const userData = doc.data();
+
+                    // Update welcome message and display name
+                    if (userData.firstName) {
+                        document.getElementById('welcomeMessage').textContent =
+                            `Hello ${userData.firstName} 👋`;
+                        document.getElementById('userDisplayName').textContent =
+                            userData.firstName;
+                    }
+
+                    // Format and display user creation date
+                    if (userData.createdAt) {
+                        const createdAt = userData.createdAt.toDate();
+                        document.getElementById('userSince').textContent =
+                            createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                    }
                 }
+            }).catch(error => {
+                console.error("Error getting user data:", error);
             });
-            
-            // Logout button
-            document.getElementById('logoutButton').addEventListener('click', (e) => {
-                e.preventDefault();
-                auth.signOut().then(() => {
-                    window.location.href = 'index.html';
-                }).catch(error => {
-                    console.error("Error signing out:", error);
-                });
-            });
+
+            // Load user's financial data
+            loadIncome(user.uid);
+            loadExpenses(user.uid);
+            loadWishlist(user.uid);
+        } else {
+            // Redirect to login page if not logged in
+            window.location.href = 'login.html';
+        }
+    });
+
+    // Logout button
+    document.getElementById('logoutButton').addEventListener('click', (e) => {
+        e.preventDefault();
+        auth.signOut().then(() => {
+            window.location.href = 'index.html';
+        }).catch(error => {
+            console.error("Error signing out:", error);
         });
-        
-        // Load user's orders from Firestore
-        function loadUserOrders(userId) {
-            db.collection('orders')
-                .where('userId', '==', userId)
-                .orderBy('createdAt', 'desc')
-                .get()
-                .then(snapshot => {
-                    let currentOrders = [];
-                    let completedOrders = [];
-                    let totalOrders = 0;
-                    let activeOrdersCount = 0;
-                    
-                    snapshot.forEach(doc => {
-                        const order = {
-                            id: doc.id,
-                            ...doc.data()
-                        };
-                        
-                        totalOrders++;
-                        
-                        // Convert Firestore timestamp to Date object
-                        if (order.createdAt) {
-                            order.createdAt = order.createdAt.toDate();
-                        }
-                        
-                        if (order.status === 'Delivered') {
-                            completedOrders.push(order);
-                        } else {
-                            currentOrders.push(order);
-                            activeOrdersCount++;
-                        }
-                    });
-                    
-                    // Update order counts
-                    document.getElementById('allOrders').textContent = totalOrders;
-                    document.getElementById('activeOrders').textContent = activeOrdersCount;
-                    document.getElementById('userTotalOrders').textContent = totalOrders;
-                    
-                    // Display current orders
-                    displayOrders('currentOrdersTableBody', 'noCurrentOrders', currentOrders);
-                    
-                    // Display completed orders
-                    displayOrders('completedOrdersTableBody', 'noCompletedOrders', completedOrders);
-                })
-                .catch(error => {
-                    console.error("Error loading orders:", error);
-                });
-        }
-        
-        // Display orders in the specified table
-        function displayOrders(tableBodyId, noOrdersId, orders) {
-            const tableBody = document.getElementById(tableBodyId);
-            const noOrdersMessage = document.getElementById(noOrdersId);
-            
-            if (orders.length === 0) {
-                tableBody.innerHTML = '';
-                noOrdersMessage.style.display = 'block';
-                return;
-            }
-            
-            noOrdersMessage.style.display = 'none';
-            tableBody.innerHTML = '';
-            
-            orders.forEach(order => {
-                const row = document.createElement('tr');
-                
-                // Format date
-                const orderDate = order.createdAt instanceof Date ? 
-                    order.createdAt.toLocaleDateString() : 'N/A';
-                
-                // Get status badge class
-                let statusBadgeClass = '';
-                switch(order.status) {
-                    case 'Ready':
-                        statusBadgeClass = 'badge-ready';
-                        break;
-                    case 'Processing':
-                        statusBadgeClass = 'badge-processing';
-                        break;
-                    case 'Delivered':
-                        statusBadgeClass = 'badge-delivered';
-                        break;
-                    default:
-                        statusBadgeClass = 'bg-secondary';
-                }
-                
-                // Calculate item count
-                const itemCount = order.items ? Object.keys(order.items).length : 0;
-                
-                row.innerHTML = `
-                    <td>${order.id.substring(0, 8)}...</td>
-                    <td>${orderDate}</td>
-                    <td>${itemCount} items</td>
-                    <td>₦${order.totalAmount ? order.totalAmount.toLocaleString() : '0'}</td>
-                    <td><span class="badge ${statusBadgeClass}">${order.status}</span></td>
-                `;
-                
-                tableBody.appendChild(row);
+    });
+});
+
+// Load Income from Firestore
+function loadIncome(userId) {
+    db.collection('income')
+        .where('userId', '==', userId)
+        .orderBy('date', 'desc')
+        .get()
+        .then(snapshot => {
+            let totalIncome = 0;
+            let incomeList = [];
+
+            snapshot.forEach(doc => {
+                const income = { id: doc.id, ...doc.data() };
+                totalIncome += income.amount;
+                incomeList.push(income);
             });
-        }
-    </script>
+
+            // Update total income on the dashboard
+            document.getElementById('totalIncome').textContent = `₦${totalIncome.toLocaleString()}`;
+
+            // Display income records
+            displayFinancialData('incomeTableBody', 'noIncome', incomeList);
+        })
+        .catch(error => {
+            console.error("Error loading income:", error);
+        });
+}
+
+// Load Expenses from Firestore
+function loadExpenses(userId) {
+    db.collection('expenses')
+        .where('userId', '==', userId)
+        .orderBy('date', 'desc')
+        .get()
+        .then(snapshot => {
+            let totalExpenses = 0;
+            let expensesList = [];
+
+            snapshot.forEach(doc => {
+                const expense = { id: doc.id, ...doc.data() };
+                totalExpenses += expense.amount;
+                expensesList.push(expense);
+            });
+
+            // Update total expenses on the dashboard
+            document.getElementById('totalExpenses').textContent = `₦${totalExpenses.toLocaleString()}`;
+
+            // Display expense records
+            displayFinancialData('expensesTableBody', 'noExpenses', expensesList);
+
+            // Calculate balance
+            const totalIncome = parseFloat(document.getElementById('totalIncome').textContent.replace(/₦|,/g, '')) || 0;
+            const balance = totalIncome - totalExpenses;
+            document.getElementById('balanceAmount').textContent = `₦${balance.toLocaleString()}`;
+        })
+        .catch(error => {
+            console.error("Error loading expenses:", error);
+        });
+}
+
+// Load Wishlist from Firestore
+function loadWishlist(userId) {
+    db.collection('wishlist')
+        .where('userId', '==', userId)
+        .get()
+        .then(snapshot => {
+            let totalWishlist = 0;
+            let wishlistItems = [];
+
+            snapshot.forEach(doc => {
+                const item = { id: doc.id, ...doc.data() };
+                totalWishlist += item.amount;
+                wishlistItems.push(item);
+            });
+
+            // Update total wishlist budget on the dashboard
+            document.getElementById('totalWishlist').textContent = `₦${totalWishlist.toLocaleString()}`;
+
+            // Display wishlist items
+            displayFinancialData('wishlistTableBody', 'noWishlist', wishlistItems);
+        })
+        .catch(error => {
+            console.error("Error loading wishlist:", error);
+        });
+}
+
+// Display financial data (Income, Expenses, Wishlist)
+function displayFinancialData(tableBodyId, noDataId, dataList) {
+    const tableBody = document.getElementById(tableBodyId);
+    const noDataMessage = document.getElementById(noDataId);
+
+    if (dataList.length === 0) {
+        tableBody.innerHTML = '';
+        noDataMessage.style.display = 'block';
+        return;
+    }
+
+    noDataMessage.style.display = 'none';
+    tableBody.innerHTML = '';
+
+    dataList.forEach(item => {
+        const row = document.createElement('tr');
+
+        // Format date
+        const date = item.date instanceof Date ? item.date.toLocaleDateString() : 'N/A';
+
+        row.innerHTML = `
+            <td>${date}</td>
+            <td>${item.name}</td>
+            <td>₦${item.amount.toLocaleString()}</td>
+        `;
+
+        tableBody.appendChild(row);
+    });
+}
+</script>
 </body>
 </html>
