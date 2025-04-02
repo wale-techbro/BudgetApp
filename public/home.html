@@ -408,7 +408,7 @@ function loadExpenses(userId) {
 
 // Load Wishlist from Firestore
 function loadWishlist(userId) {
-    db.collection('wishlist')
+    db.collection('budgetItems')
         .where('userId', '==', userId)
         .get()
         .then(snapshot => {
