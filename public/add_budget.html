@@ -142,13 +142,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-        import { firebaseConfig } from './js/firebaseConfig.js';
-        import { auth } from './js/auth.js';
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"; // Use compat
+        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"; // Use compat
+        import { firebaseConfig } from './js/firebaseConfig.js'; // Ensure this path is correct
     
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const db = firebase.firestore(app); // Access firestore from firebase namespace
     
         const budgetForm = document.getElementById('budgetForm');
         const budgetToast = new bootstrap.Toast(document.getElementById('budgetToast'));
@@ -160,12 +159,12 @@
             const itemPrice = parseFloat(document.getElementById('itemPrice').value);
     
             try {
-                await addDoc(collection(db, "budgetItems"), {
+                await db.collection("budgetItems").add({ // Use db.collection
                     name: itemName,
                     price: itemPrice,
                     timestamp: new Date(),
                     currency: "NGN",
-                    userId: auth.currentUser.uid
+                    userId: firebase.auth().currentUser.uid
                 });
     
                 budgetToast.show();
