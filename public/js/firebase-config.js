@@ -1,12 +1,12 @@
 // Your web app's Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyAj33z89WqPI9YMcakZDeNAX8riFCxNx0Q",
-    authDomain: "easylaundry-91ed7.firebaseapp.com",
-    projectId: "easylaundry-91ed7",
-    storageBucket: "easylaundry-91ed7.firebasestorage.app",
-    messagingSenderId: "894016437104",
-    appId: "1:894016437104:web:fd283fde1746b52687adb5",
-    measurementId: "G-8HSWYNRFM2"
+  const firebaseConfig = {
+    apiKey: "AIzaSyCaiODVNHbWIF1K0Kk08Udd2andVi3heOc",
+    authDomain: "budgetapp-b592a.firebaseapp.com",
+    projectId: "budgetapp-b592a",
+    storageBucket: "budgetapp-b592a.firebasestorage.app",
+    messagingSenderId: "899009356621",
+    appId: "1:899009356621:web:abad8af37010fdc9f04d04",
+    measurementId: "G-PZPY6HZLWF"
   };
   
   // Initialize Firebase
