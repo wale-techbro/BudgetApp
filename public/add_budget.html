@@ -143,7 +143,6 @@
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"; // Use compat
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"; // Use compat
         import { firebaseConfig } from './js/firebaseConfig.js'; // Ensure this path is correct
     
         const app = initializeApp(firebaseConfig);
@@ -159,7 +158,7 @@
             const itemPrice = parseFloat(document.getElementById('itemPrice').value);
     
             try {
-                await db.collection("budgetItems").add({ // Use db.collection
+                await db.collection("budgetItems").add({
                     name: itemName,
                     price: itemPrice,
                     timestamp: new Date(),
