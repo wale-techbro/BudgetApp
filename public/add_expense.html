@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add New Pickup - BudgetApp</title>
+    <title>Add New Expense - BudgetApp</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="img/favicon.ico">
     <style>
@@ -96,8 +96,8 @@
 
     <div class="container mt-4">
         <div class="page-header">
-            <h2>Add New Item to Expense</h2>
-            <p>Fill out the form below to add new item to Expense.</p>
+            <h2>Add New Item to Wishlist/Budget</h2>
+            <p>Fill out the form below to add new item to Budget.</p>
         </div>
     
         <div class="row">
@@ -119,7 +119,7 @@
                                 <small class="form-text text-muted">Enter price in Naira.</small>
                             </div>
     
-                            <button type="submit" id="submitBudgetBtn" class="btn btn-primary w-100">Add to Expense</button>
+                            <button type="submit" id="submitBudgetBtn" class="btn btn-primary w-100">Add to Budget</button>
                         </form>
                     </div>
                 </div>
@@ -134,23 +134,28 @@
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Your Expense item has been added successfully!
+                Your budget item has been added successfully!
             </div>
         </div>
     </div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <!-- Your Firebase configuration script -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
-        import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
-        import { firebaseConfig } from './js/firebaseConfig.js'; // Ensure this path is correct
+        import { firebaseConfig } from './js/firebaseConfig.js';
     
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore(app);
     
         const budgetForm = document.getElementById('budgetForm');
-        const budgetToast = new bootstrap.Toast(document.getElementById('budgetToast'));
     
         budgetForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -159,15 +164,17 @@
             const itemPrice = parseFloat(document.getElementById('itemPrice').value);
     
             try {
-                await addDoc(collection(db, "budgetItems"), {
+                await db.collection("budgetItems").add({
                     name: itemName,
                     price: itemPrice,
                     timestamp: new Date(),
-                    currency: "NGN"
+                    currency: "NGN",
+                    userId: firebase.auth().currentUser.uid
                 });
     
-                budgetToast.show();
-                budgetForm.reset();
+                alert("Item added successfully!"); // Display success alert
+                window.location.href = 'home.html'; // Redirect to home.html
+    
             } catch (error) {
                 console.error("Error adding document: ", error);
                 alert("Failed to add item. Please try again.");
