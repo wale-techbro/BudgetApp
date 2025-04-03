@@ -138,9 +138,6 @@
                     <h2 id="welcomeMessage">Hello User 👋</h2>
                     <p id="currentDate">Today is Monday 24th, 2025</p>
                 </div>
-                <div id="adminPanel" style="display:none;">
-                    <a href="admin.html" class="admin-link">Admin Panel</a>
-                </div>
             </div>
         </div>
         
@@ -178,7 +175,30 @@
         
             <!-- Main Dashboard Sections -->
             <div class="col-md-8">
-                <!-- Income Section -->
+                <div class="card">
+                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">My Budget/Wishlist</h5>
+                        <a href="add_budget.html" class="btn get-started-btn">Add to Wishlist</a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table align-middle" id="budgetTable">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Allocated Budget</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="budgetTableBody">
+                                    </tbody>
+                            </table>
+                        </div>
+                        <div id="nobudget" class="text-center py-3">
+                            <p class="text-muted">No budget items added yet.</p>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="card">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">My Income</h5>
@@ -195,8 +215,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="incomeTableBody">
-                                    <!-- Income entries will be loaded here dynamically -->
-                                </tbody>
+                                    </tbody>
                             </table>
                         </div>
                         <div id="noIncome" class="text-center py-3">
@@ -204,8 +223,7 @@
                         </div>
                     </div>
                 </div>
-        
-                <!-- Expenses Section -->
+                
                 <div class="card mt-4">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">My Expenses</h5>
@@ -222,8 +240,7 @@
                                     </tr>
                                 </thead>
                                 <tbody id="expensesTableBody">
-                                    <!-- Expenses will be loaded here dynamically -->
-                                </tbody>
+                                    </tbody>
                             </table>
                         </div>
                         <div id="noExpenses" class="text-center py-3">
@@ -231,50 +248,22 @@
                         </div>
                     </div>
                 </div>
-        
-                <!-- Budget/budget Section -->
-                <div class="card mt-4">
-                    <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">My Budget/Wishlist</h5>
-                        <a href="add_budget.html" class="btn get-started-btn">Add to Wishlist</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table align-middle" id="budgetTable">
-                                <thead>
-                                    <tr>
-                                        <th>Item</th>
-                                        <th>Allocated Budget</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="budgetTableBody">
-                                    <!-- budget items will be loaded here dynamically -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div id="nobudget" class="text-center py-3">
-                            <p class="text-muted">No budget items added yet.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
-                            <!-- Account Details Section -->
-            <div class="col-md-4">
-                <div class="card mb-4">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0">Account Details</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
-                        <p><strong>Member since:</strong> <span id="userSince">Loading...</span></p>
-                        <p><strong>Total Transactions:</strong> <span id="userTotalTransactions">0</span></p>
-                    </div>
-                </div>
-            </div>
-
-            
         </div>
+
+                    <!-- Account Details Section -->
+                    <div class="col-md-4">
+                        <div class="card mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">Account Details</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
+                                <p><strong>Member since:</strong> <span id="userSince">Loading...</span></p>
+                                <p><strong>Total Transactions:</strong> <span id="userTotalTransactions">0</span></p>
+                            </div>
+                        </div>
+                    </div>
         
 
         
@@ -288,7 +277,7 @@
     <script src="js/firebase-config.js"></script>
     <script src="js/auth.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
     document.addEventListener('DOMContentLoaded', () => {
     // Format current date
@@ -327,9 +316,9 @@
             });
 
             // Load user's financial data
-            loadIncome(user.uid);
-            loadExpenses(user.uid);
-            loadbudget(user.uid);
+        loadBudgetItems(user.uid);
+        loadIncomeItems(user.uid);
+        loadExpenseItems(user.uid);
         } else {
             // Redirect to login page if not logged in
             window.location.href = 'login.html';
@@ -346,121 +335,114 @@
         });
     });
 });
+    
+        // Load Budget Items from Firestore
+        function loadBudgetItems(userId) {
+            db.collection('budgetItems')
+                .where('userId', '==', userId)
+                .get()
+                .then(snapshot => {
+                    const budgetItems = [];
+                    snapshot.forEach(doc => {
+                        budgetItems.push({ id: doc.id, ...doc.data() });
+                    });
+                    displayFinancialData('budgetTableBody', 'nobudget', budgetItems, ['name', 'price']);
+                })
+                .catch(error => {
+                    console.error("Error loading budget items:", error);
+                });
+        }
 
-// Load Income from Firestore
-function loadIncome(userId) {
-    db.collection('income')
-        .where('userId', '==', userId)
-        .orderBy('date', 'desc')
-        .get()
-        .then(snapshot => {
-            let totalIncome = 0;
-            let incomeList = [];
-
-            snapshot.forEach(doc => {
-                const income = { id: doc.id, ...doc.data() };
-                totalIncome += income.amount;
-                incomeList.push(income);
+    // Load Income Items from Firestore
+    function loadIncomeItems(userId) {
+        db.collection('incomeItems')
+            .where('userId', '==', userId)
+            .get()
+            .then(snapshot => {
+                const incomeItems = [];
+                let totalIncome = 0;
+                snapshot.forEach(doc => {
+                    const item = { id: doc.id, ...doc.data() };
+                    incomeItems.push(item);
+                    totalIncome += item.price; // Use item.price
+                });
+                displayFinancialData('incomeTableBody', 'noIncome', incomeItems, ['date', 'source', 'price']); // Use 'price' column
+                document.getElementById('totalIncome').textContent = `₦${totalIncome.toLocaleString()}`;
+                calculateBalance();
+            })
+            .catch(error => {
+                console.error("Error loading income items:", error);
             });
-
-            // Update total income on the dashboard
-            document.getElementById('totalIncome').textContent = `₦${totalIncome.toLocaleString()}`;
-
-            // Display income records
-            displayFinancialData('incomeTableBody', 'noIncome', incomeList);
-        })
-        .catch(error => {
-            console.error("Error loading income:", error);
-        });
-}
-
-// Load Expenses from Firestore
-function loadExpenses(userId) {
-    db.collection('expenses')
-        .where('userId', '==', userId)
-        .orderBy('date', 'desc')
-        .get()
-        .then(snapshot => {
-            let totalExpenses = 0;
-            let expensesList = [];
-
-            snapshot.forEach(doc => {
-                const expense = { id: doc.id, ...doc.data() };
-                totalExpenses += expense.amount;
-                expensesList.push(expense);
-            });
-
-            // Update total expenses on the dashboard
-            document.getElementById('totalExpenses').textContent = `₦${totalExpenses.toLocaleString()}`;
-
-            // Display expense records
-            displayFinancialData('expensesTableBody', 'noExpenses', expensesList);
-
-            // Calculate balance
-            const totalIncome = parseFloat(document.getElementById('totalIncome').textContent.replace(/₦|,/g, '')) || 0;
-            const balance = totalIncome - totalExpenses;
-            document.getElementById('balanceAmount').textContent = `₦${balance.toLocaleString()}`;
-        })
-        .catch(error => {
-            console.error("Error loading expenses:", error);
-        });
-}
-
-// Load budget from Firestore
-function loadbudget(userId) {
-    db.collection('budgetItems')
-        .where('userId', '==', userId)
-        .get()
-        .then(snapshot => {
-            let totalbudget = 0;
-            let budgetItems = [];
-
-            snapshot.forEach(doc => {
-                const item = { id: doc.id, ...doc.data() };
-                totalbudget += item.amount;
-                budgetItems.push(item);
-            });
-
-            // Update total budget on the dashboard
-            document.getElementById('totalbudget').textContent = `₦${totalbudget.toLocaleString()}`;
-
-            // Display budget items
-            displayFinancialData('budgetTableBody', 'nobudget', budgetItems);
-        })
-        .catch(error => {
-            console.error("Error loading budget:", error);
-        });
-}
-
-// Display financial data (Income, Expenses, budget)
-function displayFinancialData(tableBodyId, noDataId, dataList) {
-    const tableBody = document.getElementById(tableBodyId);
-    const noDataMessage = document.getElementById(noDataId);
-
-    if (dataList.length === 0) {
-        tableBody.innerHTML = '';
-        noDataMessage.style.display = 'block';
-        return;
     }
 
-    noDataMessage.style.display = 'none';
-    tableBody.innerHTML = '';
+    // Load Expense Items from Firestore
+    function loadExpenseItems(userId) {
+        db.collection('expenseItems')
+            .where('userId', '==', userId)
+            .get()
+            .then(snapshot => {
+                const expenseItems = [];
+                let totalExpenses = 0;
+                snapshot.forEach(doc => {
+                    const item = { id: doc.id, ...doc.data() };
+                    expenseItems.push(item);
+                    totalExpenses += item.price; // Use item.price
+                });
+                displayFinancialData('expensesTableBody', 'noExpenses', expenseItems, ['date', 'item', 'price']); // Use 'price' column
+                document.getElementById('totalExpenses').textContent = `₦${totalExpenses.toLocaleString()}`;
+                calculateBalance();
+            })
+            .catch(error => {
+                console.error("Error loading expense items:", error);
+            });
+    }
 
-    dataList.forEach(item => {
-        const row = document.createElement('tr');
+    // Display financial data (Budget, Income, Expenses)
+    function displayFinancialData(tableBodyId, noDataId, dataList, columns) {
+        const tableBody = document.getElementById(tableBodyId);
+        const noDataMessage = document.getElementById(noDataId);
 
-        // Format date
-        const date = item.date instanceof Date ? item.date.toLocaleDateString() : 'N/A';
+        if (dataList.length === 0) {
+            tableBody.innerHTML = '';
+            noDataMessage.style.display = 'block';
+            return;
+        }
 
-        row.innerHTML = `
-            <td>${date}</td>
-            <td>${item.name}</td>
-            <td>₦${item.amount.toLocaleString()}</td>
-        `;
+        noDataMessage.style.display = 'none';
+        tableBody.innerHTML = '';
 
-        tableBody.appendChild(row);
-    });
-}
+        dataList.forEach(item => {
+            const row = document.createElement('tr');
+            let rowHTML = '';
+            columns.forEach(col => {
+                let value = item[col];
+                if (col === 'date' && value instanceof Date) {
+                    value = value.toLocaleDateString();
+                } else if (col === 'price') { // Check for 'price' column
+                    if (typeof value === 'number') {
+                        value = `₦${value.toLocaleString()}`;
+                    } else {
+                        value = '₦0';
+                    }
+                }
+                rowHTML += `<td>${value || 'N/A'}</td>`;
+            });
+            row.innerHTML = rowHTML;
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Calculate and display the balance
+    function calculateBalance() {
+        const totalIncome = parseFloat(document.getElementById('totalIncome').textContent.replace(/₦|,/g, '')) || 0;
+        const totalExpenses = parseFloat(document.getElementById('totalExpenses').textContent.replace(/₦|,/g, '')) || 0;
+        const balance = totalIncome - totalExpenses;
+        document.getElementById('balance').textContent = `₦${balance.toLocaleString()}`; // Update balance display
+    }
+
 </script>
+
+
+
 </body>
 </html>
