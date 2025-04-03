@@ -232,7 +232,7 @@
                     </div>
                 </div>
         
-                <!-- Budget/Wishlist Section -->
+                <!-- Budget/budget Section -->
                 <div class="card mt-4">
                     <div class="card-header bg-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">My Budget/Wishlist</h5>
@@ -240,20 +240,20 @@
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
-                            <table class="table align-middle" id="wishlistTable">
+                            <table class="table align-middle" id="budgetTable">
                                 <thead>
                                     <tr>
                                         <th>Item</th>
                                         <th>Allocated Budget</th>
                                     </tr>
                                 </thead>
-                                <tbody id="wishlistTableBody">
-                                    <!-- Wishlist items will be loaded here dynamically -->
+                                <tbody id="budgetTableBody">
+                                    <!-- budget items will be loaded here dynamically -->
                                 </tbody>
                             </table>
                         </div>
-                        <div id="noWishlist" class="text-center py-3">
-                            <p class="text-muted">No wishlist items added yet.</p>
+                        <div id="nobudget" class="text-center py-3">
+                            <p class="text-muted">No budget items added yet.</p>
                         </div>
                     </div>
                 </div>
@@ -329,7 +329,7 @@
             // Load user's financial data
             loadIncome(user.uid);
             loadExpenses(user.uid);
-            loadWishlist(user.uid);
+            loadbudget(user.uid);
         } else {
             // Redirect to login page if not logged in
             window.location.href = 'login.html';
@@ -406,33 +406,33 @@ function loadExpenses(userId) {
         });
 }
 
-// Load Wishlist from Firestore
-function loadWishlist(userId) {
+// Load budget from Firestore
+function loadbudget(userId) {
     db.collection('budgetItems')
         .where('userId', '==', userId)
         .get()
         .then(snapshot => {
-            let totalWishlist = 0;
-            let wishlistItems = [];
+            let totalbudget = 0;
+            let budgetItems = [];
 
             snapshot.forEach(doc => {
                 const item = { id: doc.id, ...doc.data() };
-                totalWishlist += item.amount;
-                wishlistItems.push(item);
+                totalbudget += item.amount;
+                budgetItems.push(item);
             });
 
-            // Update total wishlist budget on the dashboard
-            document.getElementById('totalWishlist').textContent = `₦${totalWishlist.toLocaleString()}`;
+            // Update total budget on the dashboard
+            document.getElementById('totalbudget').textContent = `₦${totalbudget.toLocaleString()}`;
 
-            // Display wishlist items
-            displayFinancialData('wishlistTableBody', 'noWishlist', wishlistItems);
+            // Display budget items
+            displayFinancialData('budgetTableBody', 'nobudget', budgetItems);
         })
         .catch(error => {
-            console.error("Error loading wishlist:", error);
+            console.error("Error loading budget:", error);
         });
 }
 
-// Display financial data (Income, Expenses, Wishlist)
+// Display financial data (Income, Expenses, budget)
 function displayFinancialData(tableBodyId, noDataId, dataList) {
     const tableBody = document.getElementById(tableBodyId);
     const noDataMessage = document.getElementById(noDataId);
