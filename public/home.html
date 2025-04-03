@@ -210,7 +210,7 @@
                                 <thead>
                                     <tr>
                                         <th>Date</th>
-                                        <th>Source</th>
+                                        <th>Item</th>
                                         <th>Amount</th>
                                     </tr>
                                 </thead>
@@ -260,7 +260,6 @@
                             <div class="card-body">
                                 <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
                                 <p><strong>Member since:</strong> <span id="userSince">Loading...</span></p>
-                                <p><strong>Total Transactions:</strong> <span id="userTotalTransactions">0</span></p>
                             </div>
                         </div>
                     </div>
@@ -366,7 +365,7 @@
                     incomeItems.push(item);
                     totalIncome += item.price; // Use item.price
                 });
-                displayFinancialData('incomeTableBody', 'noIncome', incomeItems, ['date', 'source', 'price']); // Use 'price' column
+                displayFinancialData('incomeTableBody', 'noIncome', incomeItems, ['timestamp', 'name', 'price']);
                 document.getElementById('totalIncome').textContent = `₦${totalIncome.toLocaleString()}`;
                 calculateBalance();
             })
@@ -388,7 +387,7 @@
                     expenseItems.push(item);
                     totalExpenses += item.price; // Use item.price
                 });
-                displayFinancialData('expensesTableBody', 'noExpenses', expenseItems, ['date', 'item', 'price']); // Use 'price' column
+                displayFinancialData('expensesTableBody', 'noExpenses', expenseItems, ['timestamp', 'name', 'price']);
                 document.getElementById('totalExpenses').textContent = `₦${totalExpenses.toLocaleString()}`;
                 calculateBalance();
             })
@@ -397,40 +396,39 @@
             });
     }
 
-    // Display financial data (Budget, Income, Expenses)
     function displayFinancialData(tableBodyId, noDataId, dataList, columns) {
-        const tableBody = document.getElementById(tableBodyId);
-        const noDataMessage = document.getElementById(noDataId);
+    const tableBody = document.getElementById(tableBodyId);
+    const noDataMessage = document.getElementById(noDataId);
 
-        if (dataList.length === 0) {
-            tableBody.innerHTML = '';
-            noDataMessage.style.display = 'block';
-            return;
-        }
-
-        noDataMessage.style.display = 'none';
+    if (dataList.length === 0) {
         tableBody.innerHTML = '';
-
-        dataList.forEach(item => {
-            const row = document.createElement('tr');
-            let rowHTML = '';
-            columns.forEach(col => {
-                let value = item[col];
-                if (col === 'date' && value instanceof Date) {
-                    value = value.toLocaleDateString();
-                } else if (col === 'price') { // Check for 'price' column
-                    if (typeof value === 'number') {
-                        value = `₦${value.toLocaleString()}`;
-                    } else {
-                        value = '₦0';
-                    }
-                }
-                rowHTML += `<td>${value || 'N/A'}</td>`;
-            });
-            row.innerHTML = rowHTML;
-            tableBody.appendChild(row);
-        });
+        noDataMessage.style.display = 'block';
+        return;
     }
+
+    noDataMessage.style.display = 'none';
+    tableBody.innerHTML = '';
+
+    dataList.forEach(item => {
+        const row = document.createElement('tr');
+        let rowHTML = '';
+        columns.forEach(col => {
+            let value = item[col];
+            if (col === 'timestamp' && value && value.toDate) { // Check for timestamp and toDate method
+                value = value.toDate().toLocaleDateString(); // Convert to Date and format
+            } else if (col === 'price') {
+                if (typeof value === 'number') {
+                    value = `₦${value.toLocaleString()}`;
+                } else {
+                    value = '₦0';
+                }
+            }
+            rowHTML += `<td>${value || 'N/A'}</td>`;
+        });
+        row.innerHTML = rowHTML;
+        tableBody.appendChild(row);
+    });
+}
 
     // Calculate and display the balance
     function calculateBalance() {
@@ -439,6 +437,7 @@
         const balance = totalIncome - totalExpenses;
         document.getElementById('balance').textContent = `₦${balance.toLocaleString()}`; // Update balance display
     }
+    
 
 </script>
 
