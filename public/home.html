@@ -24,12 +24,23 @@
             border: none;
         }
         .welcome-banner {
-            background: linear-gradient(to right, #377666, #A9D933);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(to right, #377666, #A9D933);
             color: white;
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
-        }
+    }
+
+    .user-welcome {
+        flex-grow: 1;
+    }
+
+    .reset-dashboard {
+        margin-left: 20px;
+    }
         .stats-card {
             text-align: center;
             padding: 20px;
@@ -138,6 +149,9 @@
                     <h2 id="welcomeMessage">Hello User 👋</h2>
                     <p id="currentDate">Today is Monday 24th, 2025</p>
                 </div>
+            </div>
+            <div class="reset-dashboard">
+                <button id="resetDashboardBtn" class="btn btn-danger">Reset Dashboard</button>
             </div>
         </div>
         
@@ -278,62 +292,97 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-    // Format current date
-    const now = new Date();
-    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-    document.getElementById('currentDate').textContent = `Today is ${now.toLocaleDateString('en-US', options)}`;
-
-    // Check if user is logged in
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            // Update user info
-            document.getElementById('userEmail').textContent = user.email;
-
-            // Get additional user data from Firestore
-            db.collection('users').doc(user.uid).get().then(doc => {
-                if (doc.exists) {
-                    const userData = doc.data();
-
-                    // Update welcome message and display name
-                    if (userData.firstName) {
-                        document.getElementById('welcomeMessage').textContent =
-                            `Hello ${userData.firstName} 👋`;
-                        document.getElementById('userDisplayName').textContent =
-                            userData.firstName;
-                    }
-
-                    // Format and display user creation date
-                    if (userData.createdAt) {
-                        const createdAt = userData.createdAt.toDate();
-                        document.getElementById('userSince').textContent =
-                            createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-                    }
+        document.addEventListener('DOMContentLoaded', () => {
+            // Format current date
+            const now = new Date();
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            document.getElementById('currentDate').textContent = `Today is ${now.toLocaleDateString('en-US', options)}`;
+    
+            // Check if user is logged in
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    // Update user info
+                    document.getElementById('userEmail').textContent = user.email;
+    
+                    // Get additional user data from Firestore
+                    db.collection('users').doc(user.uid).get().then(doc => {
+                        if (doc.exists) {
+                            const userData = doc.data();
+    
+                            // Update welcome message and display name
+                            if (userData.firstName) {
+                                document.getElementById('welcomeMessage').textContent =
+                                    `Hello ${userData.firstName} 👋`;
+                                document.getElementById('userDisplayName').textContent =
+                                    userData.firstName;
+                            }
+    
+                            // Format and display user creation date
+                            if (userData.createdAt) {
+                                const createdAt = userData.createdAt.toDate();
+                                document.getElementById('userSince').textContent =
+                                    createdAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                            }
+                        }
+                    }).catch(error => {
+                        console.error("Error getting user data:", error);
+                    });
+    
+                    const resetDashboardBtn = document.getElementById('resetDashboardBtn');
+                    resetDashboardBtn.addEventListener('click', () => {
+                        if (confirm("Are you sure you want to reset your dashboard? This will delete all your income, expenses, and budget items.")) {
+                            deleteDashboardData(user.uid);
+                        }
+                    });
+    
+                    // Load user's financial data
+                    loadBudgetItems(user.uid);
+                    loadIncomeItems(user.uid);
+                    loadExpenseItems(user.uid);
+                } else {
+                    // Redirect to login page if not logged in
+                    window.location.href = 'login.html';
                 }
-            }).catch(error => {
-                console.error("Error getting user data:", error);
             });
-
-            // Load user's financial data
-        loadBudgetItems(user.uid);
-        loadIncomeItems(user.uid);
-        loadExpenseItems(user.uid);
-        } else {
-            // Redirect to login page if not logged in
-            window.location.href = 'login.html';
-        }
-    });
-
-    // Logout button
-    document.getElementById('logoutButton').addEventListener('click', (e) => {
-        e.preventDefault();
-        auth.signOut().then(() => {
-            window.location.href = 'index.html';
-        }).catch(error => {
-            console.error("Error signing out:", error);
+    
+            // Logout button
+            document.getElementById('logoutButton').addEventListener('click', (e) => {
+                e.preventDefault();
+                auth.signOut().then(() => {
+                    window.location.href = 'index.html';
+                }).catch(error => {
+                    console.error("Error signing out:", error);
+                });
+            });
         });
-    });
-});
+    
+async function deleteDashboardData(userId) {
+    try {
+        await deleteAllDocuments('incomeItems', userId);
+        await deleteAllDocuments('expenseItems', userId);  // Fixed: removed the extra "s"
+        await deleteAllDocuments('budgetItems', userId);
+        alert("Dashboard reset successfully!");
+        window.location.reload();
+    } catch (error) {
+        console.error("Error resetting dashboard:", error);
+        alert("Failed to reset dashboard. Please try again.");
+    }
+}
+
+        async function deleteAllDocuments(collectionName, userId) {
+    const querySnapshot = await db.collection(collectionName)
+        .where('userId', '==', userId)
+        .get();
+    console.log(`Query Snapshot for ${collectionName}:`, querySnapshot); // Add this line
+ 
+    
+            const deletePromises = [];
+            querySnapshot.forEach(doc => {
+                deletePromises.push(db.collection(collectionName).doc(doc.id).delete());
+            });
+    
+            await Promise.all(deletePromises);
+        }
     
         // Load Budget Items from Firestore
         function loadBudgetItems(userId) {
@@ -351,97 +400,97 @@
                     console.error("Error loading budget items:", error);
                 });
         }
-
-    // Load Income Items from Firestore
-    function loadIncomeItems(userId) {
-        db.collection('incomeItems')
-            .where('userId', '==', userId)
-            .get()
-            .then(snapshot => {
-                const incomeItems = [];
-                let totalIncome = 0;
-                snapshot.forEach(doc => {
-                    const item = { id: doc.id, ...doc.data() };
-                    incomeItems.push(item);
-                    totalIncome += item.price; // Use item.price
+    
+        // Load Income Items from Firestore
+        function loadIncomeItems(userId) {
+            db.collection('incomeItems')
+                .where('userId', '==', userId)
+                .get()
+                .then(snapshot => {
+                    const incomeItems = [];
+                    let totalIncome = 0;
+                    snapshot.forEach(doc => {
+                        const item = { id: doc.id, ...doc.data() };
+                        incomeItems.push(item);
+                        totalIncome += item.price; // Use item.price
+                    });
+                    displayFinancialData('incomeTableBody', 'noIncome', incomeItems, ['timestamp', 'name', 'price']);
+                    document.getElementById('totalIncome').textContent = `₦${totalIncome.toLocaleString()}`;
+                    calculateBalance();
+                })
+                .catch(error => {
+                    console.error("Error loading income items:", error);
                 });
-                displayFinancialData('incomeTableBody', 'noIncome', incomeItems, ['timestamp', 'name', 'price']);
-                document.getElementById('totalIncome').textContent = `₦${totalIncome.toLocaleString()}`;
-                calculateBalance();
-            })
-            .catch(error => {
-                console.error("Error loading income items:", error);
-            });
-    }
-
-    // Load Expense Items from Firestore
-    function loadExpenseItems(userId) {
-        db.collection('expenseItems')
-            .where('userId', '==', userId)
-            .get()
-            .then(snapshot => {
-                const expenseItems = [];
-                let totalExpenses = 0;
-                snapshot.forEach(doc => {
-                    const item = { id: doc.id, ...doc.data() };
-                    expenseItems.push(item);
-                    totalExpenses += item.price; // Use item.price
+        }
+    
+        // Load Expense Items from Firestore
+        function loadExpenseItems(userId) {
+            db.collection('expenseItems')
+                .where('userId', '==', userId)
+                .get()
+                .then(snapshot => {
+                    const expenseItems = [];
+                    let totalExpenses = 0;
+                    snapshot.forEach(doc => {
+                        const item = { id: doc.id, ...doc.data() };
+                        expenseItems.push(item);
+                        totalExpenses += item.price; // Use item.price
+                    });
+                    displayFinancialData('expensesTableBody', 'noExpenses', expenseItems, ['timestamp', 'name', 'price']);
+                    document.getElementById('totalExpenses').textContent = `₦${totalExpenses.toLocaleString()}`;
+                    calculateBalance();
+                })
+                .catch(error => {
+                    console.error("Error loading expense items:", error);
                 });
-                displayFinancialData('expensesTableBody', 'noExpenses', expenseItems, ['timestamp', 'name', 'price']);
-                document.getElementById('totalExpenses').textContent = `₦${totalExpenses.toLocaleString()}`;
-                calculateBalance();
-            })
-            .catch(error => {
-                console.error("Error loading expense items:", error);
-            });
-    }
-
-    function displayFinancialData(tableBodyId, noDataId, dataList, columns) {
-    const tableBody = document.getElementById(tableBodyId);
-    const noDataMessage = document.getElementById(noDataId);
-
-    if (dataList.length === 0) {
-        tableBody.innerHTML = '';
-        noDataMessage.style.display = 'block';
-        return;
-    }
-
-    noDataMessage.style.display = 'none';
-    tableBody.innerHTML = '';
-
-    dataList.forEach(item => {
-        const row = document.createElement('tr');
-        let rowHTML = '';
-        columns.forEach(col => {
-            let value = item[col];
-            if (col === 'timestamp' && value && value.toDate) { // Check for timestamp and toDate method
-                value = value.toDate().toLocaleDateString(); // Convert to Date and format
-            } else if (col === 'price') {
-                if (typeof value === 'number') {
-                    value = `₦${value.toLocaleString()}`;
-                } else {
-                    value = '₦0';
-                }
+        }
+    
+        function displayFinancialData(tableBodyId, noDataId, dataList, columns) {
+            const tableBody = document.getElementById(tableBodyId);
+            const noDataMessage = document.getElementById(noDataId);
+    
+            if (dataList.length === 0) {
+                tableBody.innerHTML = '';
+                noDataMessage.style.display = 'block';
+                return;
             }
-            rowHTML += `<td>${value || 'N/A'}</td>`;
-        });
-        row.innerHTML = rowHTML;
-        tableBody.appendChild(row);
-    });
-}
-
+    
+            noDataMessage.style.display = 'none';
+            tableBody.innerHTML = '';
+    
+            dataList.forEach(item => {
+                const row = document.createElement('tr');
+                let rowHTML = '';
+                columns.forEach(col => {
+                    let value = item[col];
+                    if (col === 'timestamp' && value && value.toDate) { // Check for timestamp and toDate method
+                        value = value.toDate().toLocaleDateString(); // Convert to Date and format
+                    } else if (col === 'price') {
+                        if (typeof value === 'number') {
+                            value = `₦${value.toLocaleString()}`;
+                        } else {
+                            value = '₦0';
+                        }
+                    }
+                    rowHTML += `<td>${value || 'N/A'}</td>`;
+                });
+                row.innerHTML = rowHTML;
+                tableBody.appendChild(row);
+            });
+        }
+    
         // Calculate and display the balance, and alert for overspending
         function calculateBalance() {
-        const totalIncome = parseFloat(document.getElementById('totalIncome').textContent.replace(/₦|,/g, '')) || 0;
-        const totalExpenses = parseFloat(document.getElementById('totalExpenses').textContent.replace(/₦|,/g, '')) || 0;
-        const balance = totalIncome - totalExpenses;
-    document.getElementById('balance').textContent = `₦${balance.toLocaleString()}`;
-    if (balance < 0) {
-        alert("Warning: You are overspending! Your expenses exceed your income.");
-    }
-    }    
-
-</script>
+            const totalIncome = parseFloat(document.getElementById('totalIncome').textContent.replace(/₦|,/g, '')) || 0;
+            const totalExpenses = parseFloat(document.getElementById('totalExpenses').textContent.replace(/₦|,/g, '')) || 0;
+            const balance = totalIncome - totalExpenses;
+            document.getElementById('balance').textContent = `₦${balance.toLocaleString()}`;
+            if (balance < 0) {
+                alert("Warning: You are overspending! Your expenses exceed your income.");
+            }
+        }
+    
+    </script>
 
 
 
